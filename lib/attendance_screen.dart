@@ -54,104 +54,154 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     // TODO: Save updated attendance to storage
   }
 
+  double _calculateAttendancePercentage() {
+    if (_sessions.isEmpty) return 0;
+
+    int presentCount =
+        _sessions.where((s) => s.isPresent).length;
+
+    return (presentCount / _sessions.length) * 100;
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final double attendancePercent =
+        _calculateAttendancePercentage();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Attendance"),
       ),
 
-      body: _sessions.isEmpty
-          ? const Center(
-              child: Text(
-                "No sessions available",
-                style: TextStyle(fontSize: 16),
-              ),
-            )
-          : ListView.builder(
-              itemCount: _sessions.length,
+      body: Column(
+        children: [
 
-              itemBuilder: (context, index) {
+          // ================= Attendance Summary =================
 
-                final session = _sessions[index];
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
 
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+            color: Colors.blue.shade50,
+
+            child: Column(
+              children: [
+
+                Text(
+                  "Attendance: ${attendancePercent.toStringAsFixed(1)}%",
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
 
-                  child: ListTile(
+                const SizedBox(height: 4),
 
-                    title: Text(
-                      session.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-
-                    subtitle: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-
-                      children: [
-
-                        const SizedBox(height: 4),
-
-                        Text(
-                          "Date: ${_formatDate(session.date)}",
-                        ),
-
-                        Text(
-                          "Time: ${session.startTime} - ${session.endTime}",
-                        ),
-
-                        if (session.location != null &&
-                            session.location!.isNotEmpty)
-
-                          Text(
-                            "Location: ${session.location}",
-                          ),
-
-                        Text(
-                          "Type: ${session.type}",
-                        ),
-                      ],
-                    ),
-
-                    trailing: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-
-                      children: [
-
-                        Switch(
-                          value: session.isPresent,
-
-                          onChanged: (value) {
-                            _toggleAttendance(index, value);
-                          },
-                        ),
-
-                        Text(
-                          session.isPresent
-                              ? "Present"
-                              : "Absent",
-
-                          style: TextStyle(
-                            fontSize: 12,
-
-                            color: session.isPresent
-                                ? Colors.green
-                                : Colors.red,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+                Text(
+                  "Present: ${_sessions.where((s) => s.isPresent).length} / ${_sessions.length}",
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
             ),
+          ),
+
+          // ================= Session List =================
+
+          Expanded(
+            child: _sessions.isEmpty
+                ? const Center(
+                    child: Text(
+                      "No sessions available",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _sessions.length,
+
+                    itemBuilder: (context, index) {
+
+                      final session = _sessions[index];
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+
+                        child: ListTile(
+
+                          title: Text(
+                            session.title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+
+                          subtitle: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+
+                            children: [
+
+                              const SizedBox(height: 4),
+
+                              Text(
+                                "Date: ${_formatDate(session.date)}",
+                              ),
+
+                              Text(
+                                "Time: ${session.startTime} - ${session.endTime}",
+                              ),
+
+                              if (session.location != null &&
+                                  session.location!.isNotEmpty)
+
+                                Text(
+                                  "Location: ${session.location}",
+                                ),
+
+                              Text(
+                                "Type: ${session.type}",
+                              ),
+                            ],
+                          ),
+
+                          trailing: Column(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+
+                            children: [
+
+                              Switch(
+                                value: session.isPresent,
+
+                                onChanged: (value) {
+                                  _toggleAttendance(index, value);
+                                },
+                              ),
+
+                              Text(
+                                session.isPresent
+                                    ? "Present"
+                                    : "Absent",
+
+                                style: TextStyle(
+                                  fontSize: 12,
+
+                                  color: session.isPresent
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+        ],
+      ),
     );
   }
 }
