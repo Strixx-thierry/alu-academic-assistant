@@ -46,6 +46,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     return "${date.day}/${date.month}/${date.year}";
   }
 
+  void _toggleAttendance(int index, bool value) {
+    setState(() {
+      _sessions[index].isPresent = value;
+    });
+
+    // TODO: Save updated attendance to storage
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,6 +115,36 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
                         Text(
                           "Type: ${session.type}",
+                        ),
+                      ],
+                    ),
+
+                    trailing: Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+
+                      children: [
+
+                        Switch(
+                          value: session.isPresent,
+
+                          onChanged: (value) {
+                            _toggleAttendance(index, value);
+                          },
+                        ),
+
+                        Text(
+                          session.isPresent
+                              ? "Present"
+                              : "Absent",
+
+                          style: TextStyle(
+                            fontSize: 12,
+
+                            color: session.isPresent
+                                ? Colors.green
+                                : Colors.red,
+                          ),
                         ),
                       ],
                     ),
