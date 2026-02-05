@@ -25,7 +25,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   Future<void> _loadSessions() async {
     try {
-      final data = await StorageService.loadSessions();
+      final data = await AppStorage.loadSessions();
 
       if (data.isNotEmpty) {
         _sessions = data;
@@ -44,7 +44,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   Future<void> _saveSessions() async {
     try {
-      await StorageService.saveSessions(_sessions);
+      await AppStorage.saveSessions(_sessions);
     } catch (e) {
       debugPrint("Save error: $e");
     }
