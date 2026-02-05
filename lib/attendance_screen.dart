@@ -10,14 +10,19 @@ class AttendanceScreen extends StatefulWidget {
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
 
+  /// List of sessions (temporary in-memory data)
   List<Session> _sessions = [];
 
   @override
   void initState() {
     super.initState();
+
+    // Load temporary sample data
     _loadSampleData();
   }
 
+  /// Creates sample sessions for UI testing
+  /// Will be replaced with storage loading later
   void _loadSampleData() {
     _sessions = [
       Session(
@@ -29,6 +34,16 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         type: "Class",
         isPresent: true,
       ),
+
+      Session(
+        title: "Study Group",
+        date: DateTime.now().add(const Duration(days: 1)),
+        startTime: "14:00",
+        endTime: "15:00",
+        location: "Library",
+        type: "Study Group",
+        isPresent: false,
+      ),
     ];
   }
 
@@ -38,10 +53,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       appBar: AppBar(
         title: const Text("Attendance"),
       ),
+
       body: Center(
-        child: Text("Sessions: ${_sessions.length}"),
+        child: Text(
+          "Loaded Sessions: ${_sessions.length}",
+          style: const TextStyle(fontSize: 18),
+        ),
       ),
     );
   }
 }
-
