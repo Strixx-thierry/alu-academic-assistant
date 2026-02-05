@@ -63,11 +63,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     return (presentCount / _sessions.length) * 100;
   }
 
+  bool _isLowAttendance(double percent) {
+    return percent < 75;
+  }
+
   @override
   Widget build(BuildContext context) {
 
     final double attendancePercent =
         _calculateAttendancePercentage();
+
+    final bool isLow =
+        _isLowAttendance(attendancePercent);
 
     return Scaffold(
       appBar: AppBar(
@@ -83,7 +90,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
 
-            color: Colors.blue.shade50,
+            color: isLow
+                ? Colors.red.shade100
+                : Colors.green.shade100,
 
             child: Column(
               children: [
@@ -102,6 +111,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   "Present: ${_sessions.where((s) => s.isPresent).length} / ${_sessions.length}",
                   style: const TextStyle(fontSize: 14),
                 ),
+
+                if (isLow) ...[
+                  const SizedBox(height: 6),
+
+                  const Text(
+                    "⚠️ Warning: Attendance below 75%",
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
