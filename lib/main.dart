@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'colors.dart';
-import 'dashboard_screen.dart';
+import 'onboarding_screen.dart';
+import 'main_screen.dart';
+import 'storage.dart';
 
-void main() {
-  runApp(const AluAcademicAssistant());
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final config = await AppStorage.loadUserConfig();
+  runApp(AluAcademicAssistant(isLoggedIn: config != null));
 }
 
+
 class AluAcademicAssistant extends StatelessWidget {
-  const AluAcademicAssistant({super.key});
+  final bool isLoggedIn;
+  const AluAcademicAssistant({super.key, required this.isLoggedIn});
+
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +27,11 @@ class AluAcademicAssistant extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: AluColors.primaryBlue,
           primary: AluColors.primaryBlue,
-          secondary: AluColors.secondaryRed,
+          secondary: AluColors.primaryRed,
         ),
         useMaterial3: true,
       ),
-      home: const DashboardScreen(),
+      home: isLoggedIn ? const MainScreen() : const OnboardingScreen(),
     );
   }
 }
