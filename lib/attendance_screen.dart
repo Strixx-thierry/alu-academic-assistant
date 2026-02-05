@@ -10,19 +10,14 @@ class AttendanceScreen extends StatefulWidget {
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
 
-  /// List of sessions (temporary in-memory data)
   List<Session> _sessions = [];
 
   @override
   void initState() {
     super.initState();
-
-    // Load temporary sample data
     _loadSampleData();
   }
 
-  /// Creates sample sessions for UI testing
-  /// Will be replaced with storage loading later
   void _loadSampleData() {
     _sessions = [
       Session(
@@ -47,6 +42,10 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     ];
   }
 
+  String _formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,12 +53,67 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         title: const Text("Attendance"),
       ),
 
-      body: Center(
-        child: Text(
-          "Loaded Sessions: ${_sessions.length}",
-          style: const TextStyle(fontSize: 18),
-        ),
-      ),
+      body: _sessions.isEmpty
+          ? const Center(
+              child: Text(
+                "No sessions available",
+                style: TextStyle(fontSize: 16),
+              ),
+            )
+          : ListView.builder(
+              itemCount: _sessions.length,
+
+              itemBuilder: (context, index) {
+
+                final session = _sessions[index];
+
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+
+                  child: ListTile(
+
+                    title: Text(
+                      session.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    subtitle: Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
+
+                      children: [
+
+                        const SizedBox(height: 4),
+
+                        Text(
+                          "Date: ${_formatDate(session.date)}",
+                        ),
+
+                        Text(
+                          "Time: ${session.startTime} - ${session.endTime}",
+                        ),
+
+                        if (session.location != null &&
+                            session.location!.isNotEmpty)
+
+                          Text(
+                            "Location: ${session.location}",
+                          ),
+
+                        Text(
+                          "Type: ${session.type}",
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }
