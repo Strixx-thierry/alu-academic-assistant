@@ -9,6 +9,7 @@
 .history
 .svn/
 migrate_working_dir/
+__pycache__/
 
 # IntelliJ related
 *.iml
@@ -16,8 +17,8 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# The Python 3.9+ cache directory
-__pycache__/
+# VS Code related
+.vscode/
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -30,29 +31,35 @@ __pycache__/
 .pub/
 /build/
 
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will regenerate these files
-android/key.properties
-android/local.properties
-android/project.properties
-android/out/
-android/.gradle/
-android/app/src/main/res/values/strings.xml
+# Android related
+**/android/**/generated/
+**/android/captures/
+**/android/app/google-services.json
+**/android/key.properties
+**/android/local.properties
+**/android/project.properties
+**/android/out/
+**/android/.gradle/
+**/android/*.keystore
+**/android/*.jks
+**/android/app/src/main/res/values/strings.xml
+**/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
 
 # iOS/Mac related
-ios/Flutter/Generated.xcconfig
-ios/Flutter/flutter_export_environment.sh
-ios/Flutter/App.framework
-ios/Flutter/App.podspec
-ios/Flutter/App.xcframework
-ios/Pods/
-ios/.generated/
-macos/Flutter/ephemeral/
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/App.framework
+**/ios/Flutter/App.podspec
+**/ios/Flutter/App.xcframework
+**/ios/Flutter/App.framework.zip
+**/ios/Flutter/App.framework_v7.zip
+**/ios/Flutter/App.framework_v7s.zip
+**/ios/Flutter/App.framework_v7.plist
+**/ios/Flutter/App.framework_v7s.plist
+**/ios/.generated/
+**/macos/Flutter/ephemeral/
 
 # Windows related
 windows/flutter/ephemeral/
@@ -69,15 +76,25 @@ linux/flutter/ephemeral/
 # Web related
 lib/generated_plugin_registrant.dart
 
-# Executables
-*.exe
-*.dll
-*.so
-*.dylib
+# Symbolication and Obfuscation
+app.*.symbols
+app.*.map.json
 
-# Temporary analysis files (Created during development)
+# Temporary analysis files
 analysis.txt
 analysis_result.txt
 analysis_utf8.txt
 final_analysis.txt
 final_analysis_utf8.txt
+
+# Testing
+/test/coverage/
+
+# Executables
+*.exe
+*.dll
+*.so
+*.dylib
+*.apk
+*.aab
+*.app
