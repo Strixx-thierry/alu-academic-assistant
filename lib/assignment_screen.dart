@@ -42,7 +42,6 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
     super.initState();
     _loadAssignments();
   }
-
   void _loadAssignments() {
     // TODO: Load from storage.dart
     setState(() {
@@ -117,7 +116,7 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
                 if (title.text.isEmpty || course.text.isEmpty) return;
                 setState(() {
                   if (edit) {
-                    a!.title = title.text;
+                    a.title = title.text;
                     a.course = course.text;
                     a.dueDate = date;
                   } else {
