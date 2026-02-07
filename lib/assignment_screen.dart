@@ -4,27 +4,22 @@ import 'models.dart';
 import 'colors.dart';
 import 'storage.dart';
 
-
 class AssignmentScreen extends StatefulWidget {
   const AssignmentScreen({super.key});
-
 
   @override
   State<AssignmentScreen> createState() => _AssignmentScreenState();
 }
 
-
 class _AssignmentScreenState extends State<AssignmentScreen> {
   List<Assignment> _assignments = [];
   final DateFormat _dateFormat = DateFormat('MMM d, yyyy');
-
 
   @override
   void initState() {
     super.initState();
     _loadData();
   }
-
 
   Future<void> _loadData() async {
     final data = await AppStorage.loadAssignments();
@@ -34,11 +29,9 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
     });
   }
 
-
   Future<void> _saveData() async {
     await AppStorage.saveAssignments(_assignments);
   }
-
 
   void _addOrEditAssignment([Assignment? assignment]) {
     final isEditing = assignment != null;
@@ -46,10 +39,9 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
       text: assignment?.title ?? '',
     );
     final courseController = TextEditingController(
-      text: assignment?.course ?? '',
+      text: assignment?.courseName ?? '', // Changed from .course to .courseName
     );
     DateTime selectedDate = assignment?.dueDate ?? DateTime.now();
-
 
     showDialog(
       context: context,
@@ -97,13 +89,12 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
                   return;
                 }
                 final newAssignment = Assignment(
-                  id: isEditing ? assignment.id : DateTime.now().toString(),
+                  id: isEditing ? assignment.id : null, // Let the model generate ID
                   title: titleController.text,
-                  course: courseController.text,
+                  courseName: courseController.text, // Changed from course to courseName
                   dueDate: selectedDate,
                   isCompleted: isEditing ? assignment.isCompleted : false,
                 );
-
 
                 setState(() {
                   if (isEditing) {
@@ -127,14 +118,12 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
     );
   }
 
-
   void _deleteAssignment(String id) {
     setState(() {
       _assignments.removeWhere((a) => a.id == id);
     });
     _saveData();
   }
-
 
   void _toggleComplete(Assignment assignment) {
     setState(() {
@@ -145,7 +134,6 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
     });
     _saveData();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +169,7 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
                       ),
                     ),
                     subtitle: Text(
-                      "${item.course} | Due: ${_dateFormat.format(item.dueDate)}",
+                      "${item.courseName} | Due: ${_dateFormat.format(item.dueDate)}", // Changed from .course to .courseName
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -208,5 +196,3 @@ class _AssignmentScreenState extends State<AssignmentScreen> {
     );
   }
 }
-
-
