@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
-import 'dashboard_screen.dart';
-import 'assignment_screen.dart';
-import 'schedule_screen.dart';
-import 'login_screen.dart';
-import 'storage.dart';
+import 'package:alu_academic_assistant/screens/dashboard/dashboard_screen.dart';
+import 'package:alu_academic_assistant/screens/assignments/assignment_screen.dart';
+import 'package:alu_academic_assistant/screens/schedule/schedule_screen.dart';
+import 'package:alu_academic_assistant/screens/auth/login_screen.dart';
+import 'package:alu_academic_assistant/services/storage_service.dart';
+import 'package:alu_academic_assistant/theme/app_colors.dart';
 
+/// The root layout of the application after logging in.
+///
+/// Design Decision: Using a BottomNavigationBar with IndexedStack to
+/// provide quick access to core modules while preserving the state of
+/// each screen as the user switches between tabs.
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -15,6 +21,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
+  // List of top-level modules
   final List<Widget> _screens = [
     const DashboardScreen(),
     const AssignmentScreen(),
@@ -27,6 +34,7 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  /// Handles user logout with confirmation.
   Future<void> _handleLogout() async {
     final bool? confirmLogout = await showDialog<bool>(
       context: context,
@@ -42,7 +50,7 @@ class _MainScreenState extends State<MainScreen> {
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFFE8540E),
+                foregroundColor: AluColors.primaryBlue,
               ),
               child: const Text('Logout'),
             ),
@@ -52,10 +60,10 @@ class _MainScreenState extends State<MainScreen> {
     );
 
     if (confirmLogout == true) {
-      // Clear login state
       await AppStorage.logout();
 
       if (mounted) {
+        // Clear navigation stack and return to Login
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const LoginScreen()),
           (route) => false,
@@ -64,6 +72,7 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  /// Displays account options in a bottom sheet.
   void _showLogoutMenu() {
     showModalBottomSheet(
       context: context,
@@ -78,17 +87,11 @@ class _MainScreenState extends State<MainScreen> {
             children: [
               const Text(
                 'Account',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               ListTile(
-                leading: const Icon(
-                  Icons.logout,
-                  color: Color(0xFFE8540E),
-                ),
+                leading: const Icon(Icons.logout, color: AluColors.primaryBlue),
                 title: const Text('Logout'),
                 onTap: () {
                   Navigator.pop(context);
@@ -107,7 +110,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE8540E),
+        backgroundColor: AluColors.primaryBlue,
         elevation: 0,
         title: Text(
           _getAppBarTitle(),
@@ -118,24 +121,20 @@ class _MainScreenState extends State<MainScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.account_circle,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.account_circle, color: Colors.white),
             onPressed: _showLogoutMenu,
             tooltip: 'Account',
           ),
         ],
       ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      // Design Decision: IndexedStack keeps all screens alive in memory
+      // preventing unnecessary reloads when switching tabs.
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFFE8540E),
+        selectedItemColor: AluColors.primaryBlue,
         unselectedItemColor: Colors.grey,
         backgroundColor: Colors.white,
         elevation: 8,

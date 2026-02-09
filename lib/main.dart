@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'colors.dart';
-import 'login_screen.dart';
-import 'main_screen.dart';
-import 'storage.dart';
+import 'theme/app_colors.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/main_screen.dart';
+import 'services/storage_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

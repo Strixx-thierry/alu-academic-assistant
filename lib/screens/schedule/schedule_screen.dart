@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'colors.dart';
-import 'models.dart';
-import 'storage.dart';
+import 'package:alu_academic_assistant/theme/app_colors.dart';
+import 'package:alu_academic_assistant/models/models.dart';
+import 'package:alu_academic_assistant/services/storage_service.dart';
+import 'package:alu_academic_assistant/widgets/section_header.dart';
 
+/// Module for tracking academic sessions and attendance.
+///
+/// Design Decision: Splitting sessions into Upcoming and Past categories
+/// allows students to look ahead at their schedule while easily
+/// marking attendance for events that have already occurred.
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
 
@@ -34,11 +40,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     await AppStorage.saveSessions(_sessions);
   }
 
+  /// Opens a dialog to create or update an academic session.
   void _addOrEditSession([Session? session]) {
     final isEditing = session != null;
-    final titleController = TextEditingController(
-      text: session?.title ?? '',
-    );
+    final titleController = TextEditingController(text: session?.title ?? '');
     final locationController = TextEditingController(
       text: session?.location ?? '',
     );
@@ -48,62 +53,52 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         : TimeOfDay.now();
     TimeOfDay endTime = session != null
         ? TimeOfDay.fromDateTime(session.endTime)
-        : TimeOfDay(hour: TimeOfDay.now().hour + 1, minute: 0);
+        : TimeOfDay(hour: (TimeOfDay.now().hour + 1) % 24, minute: 0);
     String selectedType = session?.type ?? 'Lecture';
 
-    final sessionTypes = [
+    const sessionTypes = [
       'Class',
       'Mastery Session',
       'Study Group',
-      'PSL Meeting',
       'Lecture',
-      'Practical',
-      'Workshop'
+      'Workshop',
     ];
 
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: Text(isEditing ? 'Edit Session' : 'Add Session'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(isEditing ? 'Edit Session' : 'New Session'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Session Title *',
-                    hintText: 'e.g., Software Development',
-                  ),
+                  decoration: const InputDecoration(labelText: 'Title *'),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: locationController,
-                  decoration: const InputDecoration(
-                    labelText: 'Location (Optional)',
-                    hintText: 'e.g., Room 202',
-                  ),
+                  decoration: const InputDecoration(labelText: 'Location'),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   value: selectedType,
-                  decoration: const InputDecoration(
-                    labelText: 'Session Type',
-                  ),
+                  decoration: const InputDecoration(labelText: 'Type'),
                   items: sessionTypes
-                      .map((type) => DropdownMenuItem(
-                            value: type,
-                            child: Text(type),
-                          ))
+                      .map(
+                        (type) =>
+                            DropdownMenuItem(value: type, child: Text(type)),
+                      )
                       .toList(),
                   onChanged: (val) {
-                    if (val != null) {
-                      setDialogState(() => selectedType = val);
-                    }
+                    if (val != null) setDialogState(() => selectedType = val);
                   },
                 ),
-                const SizedBox(height: 12),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text("Date: ${_dateFormat.format(selectedDate)}"),
@@ -113,41 +108,37 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       context: context,
                       initialDate: selectedDate,
                       firstDate: DateTime.now().subtract(
-                        const Duration(days: 365),
+                        const Duration(days: 90),
                       ),
                       lastDate: DateTime.now().add(const Duration(days: 365)),
                     );
-                    if (picked != null) {
+                    if (picked != null)
                       setDialogState(() => selectedDate = picked);
-                    }
                   },
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text("Start Time: ${startTime.format(context)}"),
+                  title: Text("Start: ${startTime.format(context)}"),
                   trailing: const Icon(Icons.access_time),
                   onTap: () async {
                     final picked = await showTimePicker(
                       context: context,
                       initialTime: startTime,
                     );
-                    if (picked != null) {
+                    if (picked != null)
                       setDialogState(() => startTime = picked);
-                    }
                   },
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text("End Time: ${endTime.format(context)}"),
+                  title: Text("End: ${endTime.format(context)}"),
                   trailing: const Icon(Icons.access_time),
                   onTap: () async {
                     final picked = await showTimePicker(
                       context: context,
                       initialTime: endTime,
                     );
-                    if (picked != null) {
-                      setDialogState(() => endTime = picked);
-                    }
+                    if (picked != null) setDialogState(() => endTime = picked);
                   },
                 ),
               ],
@@ -160,22 +151,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                if (titleController.text.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter a title')),
-                  );
-                  return;
-                }
+                if (titleController.text.isEmpty) return;
 
-                final startDateTime = DateTime(
+                final start = DateTime(
                   selectedDate.year,
                   selectedDate.month,
                   selectedDate.day,
                   startTime.hour,
                   startTime.minute,
                 );
-
-                final endDateTime = DateTime(
+                final end = DateTime(
                   selectedDate.year,
                   selectedDate.month,
                   selectedDate.day,
@@ -185,20 +170,18 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
                 final newSession = Session(
                   id: isEditing ? session.id : null,
-                  title: titleController.text,
-                  startTime: startDateTime,
-                  endTime: endDateTime,
-                  location: locationController.text,
+                  title: titleController.text.trim(),
+                  startTime: start,
+                  endTime: end,
+                  location: locationController.text.trim(),
                   type: selectedType,
                   isAttended: isEditing ? session.isAttended : false,
                 );
 
                 setState(() {
                   if (isEditing) {
-                    final index = _sessions.indexWhere(
-                      (s) => s.id == session.id,
-                    );
-                    _sessions[index] = newSession;
+                    final idx = _sessions.indexWhere((s) => s.id == session.id);
+                    _sessions[idx] = newSession;
                   } else {
                     _sessions.add(newSession);
                   }
@@ -207,7 +190,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 _saveData();
                 Navigator.pop(context);
               },
-              child: Text(isEditing ? 'Save' : 'Add'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AluColors.primaryBlue,
+                foregroundColor: Colors.white,
+              ),
+              child: Text(isEditing ? 'Save' : 'Create'),
             ),
           ],
         ),
@@ -216,57 +203,46 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   void _deleteSession(String id) {
-    setState(() {
-      _sessions.removeWhere((s) => s.id == id);
-    });
+    setState(() => _sessions.removeWhere((s) => s.id == id));
     _saveData();
   }
 
   void _toggleAttendance(Session session) {
     setState(() {
-      final index = _sessions.indexWhere((s) => s.id == session.id);
-      _sessions[index] = session.copyWith(
-        isAttended: !session.isAttended,
-      );
+      final idx = _sessions.indexWhere((s) => s.id == session.id);
+      _sessions[idx] = session.copyWith(isAttended: !session.isAttended);
     });
     _saveData();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Group sessions by week
     final now = DateTime.now();
-    final upcomingSessions = _sessions
-        .where((s) => s.startTime.isAfter(now))
-        .toList();
-    final pastSessions = _sessions
-        .where((s) => s.startTime.isBefore(now))
-        .toList();
+    final upcoming = _sessions.where((s) => s.startTime.isAfter(now)).toList();
+    final past = _sessions.where((s) => s.startTime.isBefore(now)).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Schedule'),
-        backgroundColor: AluColors.primaryBlue,
-        foregroundColor: Colors.white,
-      ),
       body: _sessions.isEmpty
           ? const Center(
               child: Text(
-                'No sessions scheduled yet.\nTap + to add a session.',
+                'No academic schedule found.\nTap + to add your first session.',
                 textAlign: TextAlign.center,
               ),
             )
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                if (upcomingSessions.isNotEmpty) ...[
-                  _buildSectionHeader('Upcoming Sessions'),
-                  ...upcomingSessions.map((s) => _buildSessionCard(s, false)),
+                if (upcoming.isNotEmpty) ...[
+                  const SectionHeader(title: 'Upcoming Sessions'),
+                  ...upcoming.map((s) => _buildSessionCard(s, false)),
                   const SizedBox(height: 24),
                 ],
-                if (pastSessions.isNotEmpty) ...[
-                  _buildSectionHeader('Past Sessions'),
-                  ...pastSessions.map((s) => _buildSessionCard(s, true)),
+                if (past.isNotEmpty) ...[
+                  const SectionHeader(
+                    title: 'Attendance Log',
+                    color: Colors.grey,
+                  ),
+                  ...past.map((s) => _buildSessionCard(s, true)),
                 ],
               ],
             ),
@@ -278,31 +254,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0, top: 8.0),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: AluColors.primaryBlue,
-        ),
-      ),
-    );
-  }
-
   Widget _buildSessionCard(Session session, bool isPast) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -320,24 +279,21 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       const SizedBox(height: 4),
                       Text(
                         session.type,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                     ],
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                    horizontal: 10,
+                    vertical: 4,
                   ),
                   decoration: BoxDecoration(
                     color: isPast
                         ? (session.isAttended ? Colors.green : Colors.red)
                         : Colors.orange,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     isPast
@@ -345,68 +301,44 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                         : 'Upcoming',
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const Divider(height: 24),
             Row(
               children: [
-                Icon(Icons.calendar_today,
-                    size: 16, color: Colors.grey[600]),
+                Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
                 const SizedBox(width: 8),
                 Text(
                   _dateFormat.format(session.startTime),
-                  style: TextStyle(color: Colors.grey[700]),
+                  style: const TextStyle(fontSize: 12),
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
+                const Spacer(),
+                Icon(Icons.access_time, size: 14, color: Colors.grey[600]),
                 const SizedBox(width: 8),
                 Text(
                   "${_timeFormat.format(session.startTime)} - ${_timeFormat.format(session.endTime)}",
-                  style: TextStyle(color: Colors.grey[700]),
+                  style: const TextStyle(fontSize: 12),
                 ),
               ],
             ),
-            if (session.location.isNotEmpty) ...[
-              const SizedBox(height: 8),
+            if (isPast) ...[
+              const SizedBox(height: 12),
               Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      session.location,
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (isPast)
                   TextButton.icon(
                     onPressed: () => _toggleAttendance(session),
                     icon: Icon(
-                      session.isAttended
-                          ? Icons.check_circle
-                          : Icons.cancel,
+                      session.isAttended ? Icons.cancel : Icons.check_circle,
                       size: 18,
                     ),
                     label: Text(
-                      session.isAttended
-                          ? 'Mark Absent'
-                          : 'Mark Present',
+                      session.isAttended ? 'Mark Absent' : 'Mark Present',
                     ),
                     style: TextButton.styleFrom(
                       foregroundColor: session.isAttended
@@ -414,44 +346,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           : Colors.green,
                     ),
                   ),
-                IconButton(
-                  icon: const Icon(Icons.edit, size: 20),
-                  color: Colors.blue,
-                  onPressed: () => _addOrEditSession(session),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, size: 20),
-                  color: Colors.red,
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Delete Session?'),
-                        content: const Text(
-                          'Are you sure you want to delete this session?',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _deleteSession(session.id);
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              'Delete',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      size: 20,
+                      color: Colors.red,
+                    ),
+                    onPressed: () => _deleteSession(session.id),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
