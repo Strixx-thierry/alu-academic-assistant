@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
 /// A reusable stat card widget used on the dashboard to display quick information.
-///
 /// Design Decision: Creating a generic stat card allows us to easily add more
-/// metrics to the dashboard while ensuring they all share the same elevation,
-/// padding, and typography, which contributes to a professional look and feel.
+/// metrics to the dashboard while ensuring they all share the same elevation,padding, and typography, which contributes to a professional look and feel.
 class StatCard extends StatelessWidget {
   final String label;
   final String value;

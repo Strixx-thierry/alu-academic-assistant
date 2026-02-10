@@ -3,13 +3,12 @@ import 'package:uuid/uuid.dart';
 const _uuid = Uuid();
 
 /// User model representing a student profile and credentials.
-///
 /// Design Decision: Using a dedicated User model with JSON serialization
 /// allows for easy persistence using the StorageService.
 class User {
   final String id;
   final String username;
-  final String password; // In production, this should be hashed
+  final String password;
   final String fullName;
   final String year;
   final String trimester;

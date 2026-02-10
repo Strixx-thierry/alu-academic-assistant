@@ -6,10 +6,8 @@ import 'package:alu_academic_assistant/screens/main_screen.dart';
 import 'package:alu_academic_assistant/screens/auth/signup_screen.dart';
 
 /// Entry point screen for user authentication.
-///
 /// Design Decision: Using a card-based layout with a clear brand logo and
-/// bold typography to create a professional first impression. The login
-/// state is handled via the StorageService.
+/// bold typography to create a professional first impression. The login state is handled via the StorageService.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 

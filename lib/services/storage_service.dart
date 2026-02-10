@@ -3,11 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:alu_academic_assistant/models/models.dart';
 
 /// Service responsible for persistent data storage using SharedPreferences.
-///
 /// Design Decision: Encapsulating storage logic in a dedicated service
-/// decoupled from the UI. This follows the Single Responsibility Principle
-/// and makes it easier to swap the storage implementation (e.g., to SQLite
-/// or Hive) without affecting the screens.
+/// decoupled from the UI. This follows the Single Responsibility Principle and makes it easier to swap the storage implementation (e.g., to SQLite or Hive) without affecting the screens.
 class AppStorage {
   static const String _assignmentsKey = 'assignments';
   static const String _sessionsKey = 'sessions';

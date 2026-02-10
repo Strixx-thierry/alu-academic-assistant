@@ -6,10 +6,8 @@ import 'package:alu_academic_assistant/services/storage_service.dart';
 import 'package:alu_academic_assistant/widgets/section_header.dart';
 
 /// Module for managing academic assignments and tasks.
-///
 /// Design Decision: Categorizing assignments into Overdue, Pending, and
-/// Completed provides a natural workflow for students to prioritize
-/// their academic work.
+/// Completed provides a natural workflow for students to prioritize their academic work.
 class AssignmentScreen extends StatefulWidget {
   const AssignmentScreen({super.key});
 

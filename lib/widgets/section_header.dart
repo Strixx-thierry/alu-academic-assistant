@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:alu_academic_assistant/theme/app_colors.dart';
 
 /// A reusable section header widget to maintain consistency across the app.
-///
 /// Design Decision: Encapsulating the header style in a widget ensures that
-/// all screens (Dashboard, Assignments, Schedule) have a uniform appearance
-/// for section titles, adhering to the brand's visual hierarchy.
+/// all screens (Dashboard, Assignments, Schedule) have a uniform appearance for section titles, adhering to the brand's visual hierarchy.
 class SectionHeader extends StatelessWidget {
   final String title;
   final Color? color;

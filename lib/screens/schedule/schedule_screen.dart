@@ -6,10 +6,8 @@ import 'package:alu_academic_assistant/services/storage_service.dart';
 import 'package:alu_academic_assistant/widgets/section_header.dart';
 
 /// Module for tracking academic sessions and attendance.
-///
 /// Design Decision: Splitting sessions into Upcoming and Past categories
-/// allows students to look ahead at their schedule while easily
-/// marking attendance for events that have already occurred.
+/// allows students to look ahead at their schedule while easily marking attendance for events that have already occurred.
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
 

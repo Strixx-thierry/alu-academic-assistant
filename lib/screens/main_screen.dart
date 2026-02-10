@@ -7,10 +7,8 @@ import 'package:alu_academic_assistant/services/storage_service.dart';
 import 'package:alu_academic_assistant/theme/app_colors.dart';
 
 /// The root layout of the application after logging in.
-///
 /// Design Decision: Using a BottomNavigationBar with IndexedStack to
-/// provide quick access to core modules while preserving the state of
-/// each screen as the user switches between tabs.
+/// provide quick access to core modules while preserving the state of each screen as the user switches between tabs.
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -127,8 +125,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-      // Design Decision: IndexedStack keeps all screens alive in memory
-      // preventing unnecessary reloads when switching tabs.
+      // Design Decision: IndexedStack keeps all screens alive in memory preventing unnecessary reloads when switching tabs.
       body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,

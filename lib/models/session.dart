@@ -3,10 +3,8 @@ import 'package:uuid/uuid.dart';
 const _uuid = Uuid();
 
 /// Session model for academic classes and meetings.
-///
 /// Design Decision: Tracking attendance through a boolean flag
-/// allows for automated calculation of attendance percentages
-/// on the dashboard.
+/// allows for automated calculation of attendance percentages on the dashboard.
 class Session {
   final String id;
   final String title;

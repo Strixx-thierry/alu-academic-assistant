@@ -5,10 +5,8 @@ import 'package:alu_academic_assistant/services/storage_service.dart';
 import 'package:alu_academic_assistant/screens/main_screen.dart';
 
 /// Module for new user registration and initial data setup.
-///
 /// Design Decision: Onboarding includes creating mock sessions based on
-/// the selected trimester, providing a "cold start" experience that
-/// demonstrates the app's value immediately after registration.
+/// the selected trimester, providing a "cold start" experience that demonstrates the app's value immediately after registration.
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 

@@ -3,7 +3,6 @@ import 'package:uuid/uuid.dart';
 const _uuid = Uuid();
 
 /// Assignment model for tracking academic tasks.
-///
 /// Design Decision: Including a priority field and copyWith method
 /// facilitates UI logic for sorting and updating task states without
 /// mutating the original object (immutability pattern).

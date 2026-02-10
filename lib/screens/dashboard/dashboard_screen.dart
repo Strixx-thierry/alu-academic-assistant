@@ -7,10 +7,8 @@ import 'package:alu_academic_assistant/widgets/section_header.dart';
 import 'package:alu_academic_assistant/widgets/stat_card.dart';
 
 /// The central hub of the application providing a summary of student's status.
-///
 /// Design Decision: A mix of visual data (attendance circle), quick metrics
-/// (stat cards), and chronological lists (today's sessions) provides a
-/// comprehensive yet accessible overview for the student.
+/// (stat cards), and chronological lists (today's sessions) provides a comprehensive yet accessible overview for the student.
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
